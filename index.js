@@ -24,6 +24,7 @@ async function run() {
     const toolsCollection = client.db("pc_parts").collection("tools");
     const ordersCollection = client.db("pc_parts").collection("orders");
     const paymentCollection = client.db("pc_parts").collection("payments");
+    const reviewCollection = client.db("pc_parts").collection("reviews");
 
     app.post("/create-payment-intent", async (req, res) => {
       const paymentService = req.body;
@@ -87,6 +88,18 @@ async function run() {
         updatedDoc
       );
       res.send(updatedBooking);
+    });
+
+    app.post("/addreview", async (req, res) => {
+      const review = req.body;
+      const result = await reviewCollection.insertOne(review);
+      res.send(result);
+    });
+    app.get("/reviews", async (req, res) => {
+      const query = {};
+      const cursor = reviewCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
     });
   } finally {
   }
