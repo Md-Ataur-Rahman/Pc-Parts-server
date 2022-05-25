@@ -40,6 +40,12 @@ async function run() {
       const result = await ordersCollection.insertOne(order);
       res.send(result);
     });
+    app.get("/myorders", async (req, res) => {
+      const { email } = req.query;
+      const query = { email };
+      const result = await ordersCollection.find(query).toArray();
+      res.send(result);
+    });
   } finally {
   }
 }
