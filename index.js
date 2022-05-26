@@ -42,6 +42,9 @@ async function run() {
     const paymentCollection = client.db("pc_parts").collection("payments");
     const reviewCollection = client.db("pc_parts").collection("reviews");
     const userCollection = client.db("pc_parts").collection("users");
+    const userProfileCollection = client
+      .db("pc_parts")
+      .collection("userProfile");
 
     app.post("/create-payment-intent", async (req, res) => {
       const paymentService = req.body;
@@ -158,6 +161,28 @@ async function run() {
     app.post("/product", async (req, res) => {
       const doctor = req.body;
       const result = await toolsCollection.insertOne(doctor);
+      res.send(result);
+    });
+
+    app.put("/myprofile/:email", async (req, res) => {
+      const email = req.params.email;
+      const userProfile = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: userProfile,
+      };
+      const result = await userProfileCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+    app.get("/myprofile/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await userProfileCollection.findOne(query);
       res.send(result);
     });
   } finally {
