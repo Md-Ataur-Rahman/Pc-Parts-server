@@ -158,6 +158,12 @@ async function run() {
         res.status(403).send({ message: "forbidden" });
       }
     });
+    app.get("/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = await userCollection.findOne({ email: email });
+      const isAdmin = user.role === "admin";
+      res.send({ admin: isAdmin });
+    });
     app.post("/product", async (req, res) => {
       const doctor = req.body;
       const result = await toolsCollection.insertOne(doctor);
@@ -190,6 +196,13 @@ async function run() {
       console.log(id);
       const query = { _id: ObjectId(id) };
       const result = await toolsCollection.deleteOne(query);
+      res.send(result);
+    });
+    app.delete("/orders/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: ObjectId(id) };
+      const result = await ordersCollection.deleteOne(query);
       res.send(result);
     });
   } finally {
