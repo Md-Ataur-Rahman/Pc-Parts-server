@@ -47,17 +47,20 @@ async function run() {
       .collection("userProfile");
 
     app.post("/create-payment-intent", async (req, res) => {
-      const paymentService = req.body;
-      console.log(paymentService, "service");
+      const { perPrice } = req.body;
+      // console.log(paymentService, "service");
       // const orderQuantity = paymentService.orderQuantity;
       // const amount = orderQuantity * perPrice * 100;
       // console.log(amount);
-      const perPrice = await paymentService.perPrice;
+      // const perPrice = await paymentService.perPrice;
+      console.log(perPrice);
+      const amount = perPrice * 100;
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: perPrice,
+        amount: amount,
         currency: "usd",
         payment_method_types: ["card"],
       });
+      console.log(paymentIntent.client_secret);
       res.send({ clientSecret: paymentIntent.client_secret });
     });
 
@@ -88,7 +91,7 @@ async function run() {
       const id = req.params.paymentId;
       const query = { _id: ObjectId(id) };
       const result = await ordersCollection.findOne(query);
-      console.log(result);
+      // console.log(result);
       res.send(result);
     });
     app.patch("/purchase/:id", async (req, res) => {
@@ -103,11 +106,8 @@ async function run() {
       };
 
       const result = await paymentCollection.insertOne(payment);
-      const updatedBooking = await bookingCollection.updateOne(
-        filter,
-        updatedDoc
-      );
-      res.send(updatedBooking);
+      const updatedOrder = await ordersCollection.updateOne(filter, updatedDoc);
+      res.send(updatedOrder);
     });
 
     app.post("/addreview", async (req, res) => {
