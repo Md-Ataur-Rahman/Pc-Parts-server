@@ -155,6 +155,11 @@ async function run() {
         res.status(403).send({ message: "forbidden" });
       }
     });
+    app.post("/product", async (req, res) => {
+      const doctor = req.body;
+      const result = await toolsCollection.insertOne(doctor);
+      res.send(result);
+    });
   } finally {
   }
 }
