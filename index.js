@@ -70,7 +70,7 @@ async function run() {
       const tools = await cursor.toArray();
       res.send(tools);
     });
-    app.get("/purchase/:id", async (req, res) => {
+    app.get("/purchase/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const bookingTool = await toolsCollection.findOne(query);
@@ -81,7 +81,7 @@ async function run() {
       const result = await ordersCollection.insertOne(order);
       res.send(result);
     });
-    app.get("/myorders", async (req, res) => {
+    app.get("/myorders", verifyJWT, async (req, res) => {
       const { email } = req.query;
       const query = { email };
       const result = await ordersCollection.find(query).toArray();
@@ -158,7 +158,7 @@ async function run() {
         res.status(403).send({ message: "forbidden" });
       }
     });
-    app.get("/admin/:email", async (req, res) => {
+    app.get("/admin/:email", verifyJWT, async (req, res) => {
       const email = req.params.email;
       const user = await userCollection.findOne({ email: email });
       const isAdmin = user.role === "admin";
@@ -203,6 +203,11 @@ async function run() {
       console.log(id);
       const query = { _id: ObjectId(id) };
       const result = await ordersCollection.deleteOne(query);
+      res.send(result);
+    });
+    app.get("/allorders", verifyJWT, async (req, res) => {
+      const query = {};
+      const result = await ordersCollection.find(query).toArray();
       res.send(result);
     });
   } finally {
