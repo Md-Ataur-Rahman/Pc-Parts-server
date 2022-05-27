@@ -205,6 +205,14 @@ async function run() {
       const result = await ordersCollection.find(query).toArray();
       res.send(result);
     });
+    app.delete("/allorders/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: ObjectId(id) };
+      const result = await ordersCollection.deleteOne(query);
+      res.send(result);
+    });
+
     app.put("/status/:transactionId", async (req, res) => {
       const transactionId = req.params.transactionId;
       const filter = { transactionId: transactionId };
