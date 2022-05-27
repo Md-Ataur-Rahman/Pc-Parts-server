@@ -205,6 +205,22 @@ async function run() {
       const result = await ordersCollection.find(query).toArray();
       res.send(result);
     });
+    app.put("/status/:transactionId", async (req, res) => {
+      const transactionId = req.params.transactionId;
+      const filter = { transactionId: transactionId };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          status: "SHIPPED",
+        },
+      };
+      const result = await ordersCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
   } finally {
   }
 }
